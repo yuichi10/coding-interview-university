@@ -18,6 +18,20 @@ func SA(sep string) []string {
 	return strings.Split(S(), sep)
 }
 
+func S1() string {
+	return S()
+}
+
+func S2(sep string) (string, string) {
+	sa := SA(sep)
+	return sa[0], sa[1]
+}
+
+func S3(sep string) (string, string, string) {
+	sa := SA(sep)
+	return sa[0], sa[1], sa[2]
+}
+
 func IA(sep string) []int {
 	sa := SA(sep)
 
@@ -38,6 +52,11 @@ func I1() int {
 func I2(sep string) (int, int) {
 	nums := IA(sep)
 	return nums[0], nums[1]
+}
+
+func I3(sep string) (int, int, int) {
+	nums := IA(sep)
+	return nums[0], nums[1], nums[2]
 }
 
 func init() {
