@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -59,14 +60,45 @@ func I3(sep string) (int, int, int) {
 	return nums[0], nums[1], nums[2]
 }
 
-func LongSSplitSpaceSetting() {
-	sc.Buffer(make([]byte, 10000001), 10000000)
-	sc.Split(bufio.ScanWords)
-}
-
 func init() {
 	sc = bufio.NewScanner(os.Stdin)
 }
 
+func checkFill(nums map[int]int) bool {
+	for _, v := range nums {
+		if v == 0 {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
+	N, M := I2(" ")
+
+	A := IA(" ")
+
+	nums := make(map[int]int)
+	for i := 1; i <= M; i++ {
+		nums[i] = 0
+	}
+	for _, a := range A {
+		if a <= M {
+			nums[a]++
+		}
+	}
+
+	count := 0
+	for i := 0; i < N; i++ {
+		if !checkFill(nums) {
+			break
+		}
+		n := A[len(A)-1]
+		A = A[:len(A)-1]
+		if n <= M {
+			nums[n]--
+		}
+		count++
+	}
+	fmt.Println(count)
 }

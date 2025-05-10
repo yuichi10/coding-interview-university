@@ -59,11 +59,6 @@ func I3(sep string) (int, int, int) {
 	return nums[0], nums[1], nums[2]
 }
 
-func LongSSplitSpaceSetting() {
-	sc.Buffer(make([]byte, 10000001), 10000000)
-	sc.Split(bufio.ScanWords)
-}
-
 func init() {
 	sc = bufio.NewScanner(os.Stdin)
 }
