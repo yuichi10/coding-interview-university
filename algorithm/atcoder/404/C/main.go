@@ -1,98 +1,121 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
 
-var maps []map[int]bool
+var sc *bufio.Scanner
 
-func setmaps(A, B int) {
-	if (len(maps)) < 0 {
-		maps[0]
+func S() string {
+	sc.Scan()
+	return sc.Text()
+}
+
+func SA(sep string) []string {
+	return strings.Split(S(), sep)
+}
+
+func IA(sep string) []int {
+	sa := SA(sep)
+
+	var ia []int
+	for _, i := range sa {
+		n, _ := strconv.Atoi(i)
+		ia = append(ia, n)
 	}
-	findid := ""
-	for _, m := range maps {
-		if _, ok := m[A]; ok {
-			m[B] = true
-			m[A] = true
-		}
-		if _, ok := m[B]; ok {
-			m[B] = true
-			m[A] = true
-		}
+	return ia
+}
+
+func I1() int {
+	str := S()
+	n, _ := strconv.Atoi(str)
+	return n
+}
+
+func I2(sep string) (int, int) {
+	nums := IA(sep)
+	return nums[0], nums[1]
+}
+
+type uf struct {
+	per []int
+	siz []int
+}
+
+func NewUF(n int) *uf {
+	per := make([]int, n)
+	siz := make([]int, n)
+	for i := range per {
+		per[i] = -1
+		siz[i] = 1
 	}
-	if findid == "" {
-		m := make(map[int]bool)
-		m[A] = true
-		m[B] = true
-		maps = append(maps, m)
-	}
-
-	if len(findid) > 1 {
-		ids := strings.Split(findid, "")
-
-		first_id := ids[0]
-		fid, _ := strconv.Atoi(first_id)
-		for _, id := range ids {
-			iid, _ := strconv.Atoi(id)
-			if id == first_id {
-				continue
-			} else {
-				for k, v := range maps[iid] {
-					maps[fid][k] = v
-				}
-			}
-
-		}
+	return &uf{
+		per, siz,
 	}
 }
 
+func (u *uf) root(x int) int {
+	if u.per[x] == -1 {
+		return x
+	}
+	u.per[x] = u.root(u.per[x])
+	return u.per[x]
+}
+
+func (u *uf) union(x, y int) {
+	x = u.root(x)
+	y = u.root(y)
+
+	if x == y {
+		return
+	}
+
+	if u.siz[x] < u.siz[y] {
+		a := x
+		x = y
+		y = a
+	}
+
+	u.per[y] = x
+	u.siz[x] += u.siz[y]
+}
+
+func (u *uf) size(x int) int {
+	return u.siz[u.root(x)]
+}
+
+func init() {
+	sc = bufio.NewScanner(os.Stdin)
+}
+
 func main() {
-	N, M := 0, 0
-	fmt.Scanf("%d %d", &N, &M)
+	N, M := I2(" ")
 
-	input := make(map[string]bool)
+	vec := make(map[int]int)
 
-	output := make(map[int]int)
-
-	check := make(map[int]bool)
-
-	maps = make([]map[int]bool, 0)
-
-	no := false
-
+	uf := NewUF(N + 1)
+	input := -1
 	for i := 0; i < M; i++ {
-		A, B := 0, 0
-		fmt.Scanf("%d %d", &A, &B)
-		if _, ok := input[fmt.Sprintf("%d+%d", A, B)]; !ok && !no {
-			if i == 0 {
-				m := make(map[int]bool, 0)
-				m[A] = true
-				m[B] = true
-				maps[0] = m
-			}
-			input[fmt.Sprintf("%d+%d", A, B)] = true
-			input[fmt.Sprintf("%d+%d", B, A)] = true
-			output[A] += 1
-			output[B] += 1
-			if output[A] > 2 || output[B] > 2 {
-				fmt.Println("No")
-				no = true
-			}
-			if output[A] == 2 {
-				check[A] = true
-			}
-			if output[B] == 2 {
-				check[B] = true
-			}
+		a, b := I2(" ")
+		vec[a]++
+		vec[b]++
+		uf.union(a, b)
+		input = a
+	}
+
+	for _, v := range vec {
+		if v != 2 {
+			fmt.Println("No")
+			return
 		}
 	}
-
-	if len(check) == M {
+	if uf.size(input) == N {
 		fmt.Println("Yes")
-	} else if !no {
-		fmt.Println("No")
+		return
 	}
+	fmt.Println("No")
 }
